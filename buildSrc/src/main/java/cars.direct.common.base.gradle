@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'com.google.cloud.tools.jib'
+}
+
+java {
+    sourceCompatibility = '17'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Tools
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+    implementation libs.spring.aop.starter
+    implementation libs.spring.actuator
+
+    implementation libs.aspectj.aop
+
+    // Spring Framework
+    implementation libs.spring.web
+    implementation libs.spring.validation
+//    ПОКА НЕ РАБОТАЕТ
+//    implementation libs.spring.cloud.config.client
+    annotationProcessor libs.spring.config.processor
+
+    // Web
+    implementation libs.swagger.annotation
+
+    // Lombok
+    implementation libs.lombok
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+
+    // Testing Dependencies
+    testImplementation libs.spring.test
+
+    // Other Dependencies
+    implementation libs.jetbrains.annotations
+}
+
+test {
+    useJUnitPlatform()
+}
