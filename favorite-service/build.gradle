@@ -1,0 +1,12 @@
+plugins {
+    id 'cars.direct.common.base'
+    id 'cars.direct.common.data'
+}
+
+group = 'cars.direct'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+test {
+    useJUnitPlatform()
+}
