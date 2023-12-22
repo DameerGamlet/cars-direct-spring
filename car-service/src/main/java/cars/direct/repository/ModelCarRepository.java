@@ -11,7 +11,6 @@ import java.util.List;
 @Repository
 public interface ModelCarRepository extends JpaRepository<ModelCar, Long> {
 
-
     @Query("SELECT m FROM ModelCar m WHERE m.brandCar.id = :brandId")
     List<ModelCar> getModelsByBrand(@Param("brandId") Long brandId);
 }

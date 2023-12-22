@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode
-@Table(name = "brands-car")
+@Table(name = "brands")
 public class BrandCar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

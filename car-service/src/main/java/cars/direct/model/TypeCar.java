@@ -14,7 +14,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode
-@Table(name = "types-car")
+@Table(name = "types")
 public class TypeCar {
 
     @Id
