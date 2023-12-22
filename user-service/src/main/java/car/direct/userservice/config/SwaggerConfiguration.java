@@ -1,8 +1,8 @@
 package car.direct.userservice.config;
 
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.service.ApiInfo;
+//import springfox.documentation.builders.ApiInfoBuilder;
+//import springfox.documentation.service.ApiInfo;
 
 @Configuration
 //@SecurityScheme(
@@ -13,11 +13,11 @@ import springfox.documentation.service.ApiInfo;
 //)
 public class SwaggerConfiguration {
 
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("Car Direct")
-                .description("Car Direct - Swagger")
-                .version("1.0.0")
-                .build();
-    }
+//    private ApiInfo apiInfo() {
+//        return new ApiInfoBuilder()
+//                .title("Car Direct")
+//                .description("Car Direct - Swagger")
+//                .version("1.0.0")
+//                .build();
+//    }
 }

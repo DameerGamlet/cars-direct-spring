@@ -60,6 +60,7 @@ apache-commons-validator-version = "1.7"
 apache-commons-collections-version = "3.2.2"
 commons-io-version = "2.11.0"
 swagger-version = "2.2.10"
+springfox-version = "2.2.19"
 jaxb-version = "2.3.1"
 
 ### TEST
@@ -121,6 +122,8 @@ spring-boot-plugin = { module = "org.springframework.boot:spring-boot-gradle-plu
 spring-openapi-webmvc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "spring-openapi-version" }
 # Зависимость для создания документации OpenAPI (Swagger) для Spring WebFlux.
 spring-openapi-webflux = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "spring-openapi-version" }
+
+springfox-swagger2 = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "springfox-version"}
 
 ### spring cloud ###
 # Зависимость для создания API-шлюза с помощью Spring Cloud.

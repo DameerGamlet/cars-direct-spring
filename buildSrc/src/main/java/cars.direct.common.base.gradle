@@ -24,12 +24,21 @@ dependencies {
     // Spring Framework
     implementation libs.spring.web
     implementation libs.spring.validation
-//    ПОКА НЕ РАБОТАЕТ
-//    implementation libs.spring.cloud.config.client
-    annotationProcessor libs.spring.config.processor
+
+    // SWAGGER
+    implementation 'ch.qos.logback:logback-classic'
+
+    compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
 
     // Web
     implementation libs.swagger.annotation
+
+    implementation libs.springfox.swagger2
+    implementation libs.spring.openapi.webmvc
+
+//    ПОКА НЕ РАБОТАЕТ
+//    implementation libs.spring.cloud.config.client
+    annotationProcessor libs.spring.config.processor
 
     // Lombok
     implementation libs.lombok
