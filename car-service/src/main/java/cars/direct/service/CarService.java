@@ -1,11 +1,14 @@
 package cars.direct.service;
 
+import cars.direct.dto.response.CarResponse;
 import cars.direct.model.Car;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+import java.util.UUID;
+
+@Component
 public interface CarService {
 
     /**
@@ -15,7 +18,7 @@ public interface CarService {
      * @param pageable Страница.
      * @return Страница автомобилей.
      */
-    Page<Car> getByBrand(Long brandId, Pageable pageable);
+    Page<CarResponse> getByBrand(Long brandId, Pageable pageable);
 
     /**
      * Получить автомобили по бренду и модели.
@@ -25,7 +28,7 @@ public interface CarService {
      * @param pageable Страница.
      * @return Страница автомобилей.
      */
-    Page<Car> getByBrandAndModel(Long brandId, Long modelId, Pageable pageable);
+    Page<CarResponse> getByBrandAndModel(Long brandId, Long modelId, Pageable pageable);
 
     /**
      * Получить автомобили по типу.
@@ -34,7 +37,7 @@ public interface CarService {
      * @param pageable Страница.
      * @return Страница автомобилей.
      */
-    Page<Car> getByType(Long typeId, Pageable pageable);
+    Page<CarResponse> getByType(Long typeId, Pageable pageable);
 
     /**
      * Получить все автомобили.
@@ -42,7 +45,7 @@ public interface CarService {
      * @param pageable Страница.
      * @return Страница автомобилей.
      */
-    Page<Car> getAll(Pageable pageable);
+    Page<CarResponse> getAll(Pageable pageable);
 
     /**
      * Получить автомобиль по ID.
@@ -58,26 +61,4 @@ public interface CarService {
      * @return Количество автомобилей.
      */
     Long getCount();
-
-    /**
-     * Получить все бренды.
-     *
-     * @return Список брендов.
-     */
-    List<BrandCar> getAllBrands();
-
-    /**
-     * Получить модели для определённого бренда.
-     *
-     * @param brandId ID бренда.
-     * @return Список моделей.
-     */
-    List<ModelCar> getModelsByBrand(Long brandId);
-
-    /**
-     * Получить типы автомобилей.
-     *
-     * @return Список типов.
-     */
-    List<TypeCar> getTypes();
 }

@@ -19,12 +19,12 @@ import java.util.UUID;
 
 @Tag(name = "users")
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "400", description = "Недопустимые данные, предоставленные серверу", content = {
+        @ApiResponse(responseCode = "400", description = "Invalid data provided to the server", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
         }),
-        @ApiResponse(responseCode = "401", description = "Ошибка авторизации"),
-        @ApiResponse(responseCode = "403", description = "Запрещено получать ресурс"),
-        @ApiResponse(responseCode = "404", description = "Пользователь с данным ID не найден",
+        @ApiResponse(responseCode = "401", description = "Authorization error"),
+        @ApiResponse(responseCode = "403", description = "It is forbidden to receive a resource"),
+        @ApiResponse(responseCode = "404", description = "The user with this ID was not found",
                 content = {
                         @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
                 })
@@ -32,10 +32,10 @@ import java.util.UUID;
 public interface UserApi {
 
     @Operation(
-            summary = "Регистарция пользователя",
+            summary = "User registration",
             responses = @ApiResponse(
                     responseCode = "201",
-                    description = "Успешное создание пользователя",
+                    description = "Successful user creation",
                     content = {
                             @Content(
                                     mediaType = "application/json",
@@ -45,14 +45,14 @@ public interface UserApi {
             )
     )
     CreateUserResponse create(
-            @Parameter(name = "userRegistrationDto", description = "Регистрация пользователя")
+            @Parameter(name = "userRegistrationDto", description = "User registration")
             UserRegistrationDto userRegistrationDto
     );
 
     @Operation(
-            summary = "Получение пользователя по ID",
+            summary = "Getting a user by ID",
             security = @SecurityRequirement(name = "bearerAuth"),
-            responses = @ApiResponse(responseCode = "200", description = "Успешное получение пользователя", content = {
+            responses = @ApiResponse(responseCode = "200", description = "Successful user acquisition", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))
             }))
     @PreAuthorize(value = """
@@ -64,13 +64,13 @@ public interface UserApi {
             """
     )
     UserResponseDto getByExternalId(
-            @Parameter(name = "id", description = "ID пользователя", required = true) UUID externalId);
+            @Parameter(name = "id", description = "User ID", required = true) UUID externalId);
 
 
     @Operation(
-            summary = "Обновление пользователя",
+            summary = "User update",
             security = @SecurityRequirement(name = "bearerAuth"),
-            responses = @ApiResponse(responseCode = "200", description = "Успешное обновление пользователя", content = {
+            responses = @ApiResponse(responseCode = "200", description = "Successful user update", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))
             }))
     @PreAuthorize(value = """
@@ -82,14 +82,14 @@ public interface UserApi {
             """
     )
     UserResponseDto updateUser(
-            @Parameter(name = "id", description = "ID пользователя", required = true) UUID externalId,
-            @Parameter(name = "UserRequestDto", description = "Обновить существующего пользователя")
+            @Parameter(name = "id", description = "user ID", required = true) UUID externalId,
+            @Parameter(name = "UserRequestDto", description = "Update an existing user")
             UserRequestDto userRequestDto);
 
     @Operation(
-            summary = "Удалить пользователя",
+            summary = "Delete user",
             security = @SecurityRequirement(name = "bearerAuth"),
-            responses = @ApiResponse(responseCode = "204", description = "Успешное удаление")
+            responses = @ApiResponse(responseCode = "204", description = "Successful deletion")
     )
     @PreAuthorize(value = """
             @permissionService.hasPermission(
@@ -100,6 +100,6 @@ public interface UserApi {
             """
     )
     void deleteUser(
-            @Parameter(name = "id", description = "ID пользователя", required = true) UUID externalId
+            @Parameter(name = "id", description = "User ID", required = true) UUID externalId
     );
 }

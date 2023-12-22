@@ -1,0 +1,38 @@
+package cars.direct.controller.public_api;
+
+import cars.direct.model.BrandCar;
+import cars.direct.model.ModelCar;
+import cars.direct.model.TypeCar;
+import cars.direct.service.CharacteristicService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+import static car.direct.util.HttpUtils.PUBLIC_API_VI;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(PUBLIC_API_VI + "/")
+public class CharacteristicController implements CharacteristicApi {
+
+    private final CharacteristicService characteristicService;
+
+    @GetMapping("/brands")
+    public List<BrandCar> getAllBrands() {
+        return characteristicService.getAllBrands();
+    }
+
+    @GetMapping("/brands/{brandId}/models")
+    public List<ModelCar> getModelsByBrand(@PathVariable Long brandId) {
+        return characteristicService.getModelsByBrand(brandId);
+    }
+
+    @GetMapping("/types")
+    public List<TypeCar> getTypes() {
+        return characteristicService.getTypes();
+    }
+}
