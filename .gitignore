@@ -43,7 +43,14 @@ bin/
 
 # SPTING
 
-gradle/wrapper
+!**/gradle/wrapper
+!**/application.yml.bak
 .idea/
 gradlew
 grablew.bat
+/user-service/src/main/resources/application.properties
+/authorization-service/gradle/
+authorization-service/src/main/resources/application.yml.bak
+gradle/wrapper
+mail-service/src/main/resources/templates/mail-template.html
+mail-service/src/main/resources/application.yaml.bak

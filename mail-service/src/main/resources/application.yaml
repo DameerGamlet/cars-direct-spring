@@ -1,0 +1,64 @@
+server:
+  port: 8083
+
+ms:
+  api-gateway-service:
+    url: http://127.0.0.1:7777
+
+spring:
+  application:
+    name: mail-sender-service
+  mail:
+    host: localhost
+    # host: localhost
+    port: 1025
+    username: bibraryteka.sgu@gmail.com
+    password: password
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: "*"
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+message-mail: |
+  <div style="text-align: center;">    
+    <h1>СГУ BiBraryteka</h1>    
+    <p>Информационная система управления ссылками на публикации научного коллектива</p>    
+    <hr>    
+    <h2>Активация аккаунта</h2>    
+    <p>%s, спасибо за регистрацию в нашей системе. Для активации вашего аккаунта нажмите на кнопку ниже:</p>
+    <br>
+    <a href="%s" 
+      style="
+        display: inline-block; 
+        padding: 12px 24px; 
+        background-color: #007bff; 
+        color: #fff; 
+        text-decoration: none; 
+        font-size: 18px;">Активировать аккаунт</a>   
+    <br><br>    
+    <p>Если кнопка выше не работает, вы также можете скопировать и вставить следующую ссылку в адресную строку вашего браузера:</p>   
+    <a href="%s">%s</a>   
+    <hr>   
+    <p>Сервис "СГУ BiBraryteka" предоставляет следующие возможности:</p>    
+    <ul>       
+    <li>Сбор, поиск и экспорт списков литературы</li>       
+    <li>Генерация сопроводительных документов</li>        
+    <li>Вычисление текстовых метрик</li>    
+    </ul>    
+    <p>Благодарим вас за использование нашего сервиса!</p>
+  </div>

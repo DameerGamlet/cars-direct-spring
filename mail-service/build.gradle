@@ -1,0 +1,16 @@
+plugins {
+    id 'cars.direct.common.base'
+    id 'cars.direct.common.security'
+}
+
+dependencies {
+    implementation project(':commons')
+    implementation libs.spring.boot.webflux
+
+    // mail
+    implementation libs.spring.mail
+
+    // Validation and Utilities
+    implementation libs.apache.commons.lang3
+    implementation libs.jaxb.api
+}

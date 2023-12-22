@@ -1,12 +1,18 @@
 plugins {
     id 'cars.direct.common.base'
-    id 'cars.direct.common.data'
+    id 'cars.direct.common.security'
 }
 
-group = 'cars.direct'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+dependencies {
+    implementation project(':commons')
+    implementation libs.spring.webflux
+    implementation libs.spring.oauth2.client
 
-test {
-    useJUnitPlatform()
+    implementation libs.spring.cloud.api.gateway
+    implementation libs.spring.cloud.circuitbreaker
+    implementation libs.spring.cloud.reactive.circuitbreaker
+
+    // Validation and Utilities
+    implementation libs.apache.commons.lang3
+    implementation libs.jaxb.api
 }

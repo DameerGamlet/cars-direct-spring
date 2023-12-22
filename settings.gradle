@@ -6,4 +6,7 @@ include 'authorization-service'
 include 'seller-service'
 include 'admin-service'
 include 'favorite-service'
+include 'mail-service'
+include 'commons'
+include 'config-server'
 

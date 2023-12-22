@@ -1,0 +1,232 @@
+package car.direct.userservice.service;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
+import car.direct.auth.dto.ClientAuthDetails;
+import car.direct.auth.model.Role;
+import car.direct.model.ErrorResponse;
+import car.direct.userservice.dto.request.UserRegistrationDto;
+import car.direct.userservice.dto.request.UserRequestDto;
+import car.direct.userservice.dto.response.CreateUserResponse;
+import car.direct.userservice.dto.response.UserResponseDto;
+import car.direct.userservice.exception.UserAlreadyExistsException;
+import car.direct.userservice.mapper.UserRequestMapper;
+import car.direct.userservice.mapper.UserResponseMapper;
+import car.direct.userservice.model.ConfirmationToken;
+import car.direct.userservice.model.User;
+import car.direct.userservice.model.UserCredentials;
+import car.direct.userservice.model.UserMailRequest;
+import car.direct.userservice.repository.ConfirmationTokenRepository;
+import car.direct.userservice.repository.UserRepository;
+
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
+import java.util.regex.Matcher;
+
+import static car.direct.userservice.utils.ExceptionMessagesConstants.*;
+import static car.direct.userservice.utils.PatternConstants.GROUPED_PHONE_NUMBERS_PATTERN;
+import static car.direct.util.HttpUtils.PUBLIC_API_VI;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UserService {
+//    private final UserValidator userValidator;
+    private final UserRepository userRepository;
+    private final UserRequestMapper userRequestMapper;
+    private final UserResponseMapper userResponseMapper;
+//    private final UserRegistrationValidator userRegistrationValidator;
+    private final ConfirmationTokenRepository repository;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
+
+    @Value("${services.gateway-service.url}")
+    private String API_GATEWAY_URL;
+
+    private final WebClient webClient = WebClient.create();
+
+    public CreateUserResponse signUp(UserRegistrationDto userDto) {
+//        userRegistrationValidator.validate(userDto);
+
+        checkEmailForUniqueness(userDto.email());
+
+        User user = User.builder()
+                .credentials(new UserCredentials(
+                        userDto.credentials().lastName(),
+                        userDto.credentials().firstName(),
+                        userDto.credentials().patronymic())
+                )
+                .externalId(UUID.randomUUID())
+                .email(userDto.email())
+                .role(Role.USER)
+                .password(userDto.password())
+                .build();
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                UUID.fromString(token),
+                LocalDateTime.now(),
+                LocalDateTime.now().plusHours(1),
+                user
+        );
+
+        sendRequestToMailSender(userRequestMapper.toMailRequest(user), token);
+
+        CreateUserResponse createUserResponse = new CreateUserResponse(userRepository.save(user).externalId());
+
+        repository.save(confirmationToken);
+
+        return createUserResponse;
+    }
+
+    private void sendRequestToMailSender(UserMailRequest userRequest, String token) {
+        log.info("Send activation code from user-service. \nPARAM: " + token + ", \nBODY: " + userRequest.toString());
+        webClient.post()
+                .uri(
+                        UriComponentsBuilder
+                                .fromHttpUrl("%s/%s/mail/send/activation".formatted(API_GATEWAY_URL, PUBLIC_API_VI))
+                                .queryParam("token", token)
+                                .build()
+                                .toUri()
+                )
+                .header(
+                        HttpHeaders.CONTENT_TYPE,
+                        MediaType.APPLICATION_JSON_VALUE
+                )
+                .body(BodyInserters.fromValue(userRequest))
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+    }
+
+    @Transactional
+    public void confirmToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenRepository.findByToken(UUID.fromString(token))
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Token not found")
+                );
+
+        if (confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Token expired");
+        }
+
+        User user = userRepository.findByExternalId(confirmationToken.getUser().externalId())
+                .orElseThrow(
+                        () -> new EntityNotFoundException("User not found by activation token: " + token)
+                );
+
+        user.isActive(true);
+    }
+
+    @Cacheable(value = "users", key = "#externalId")
+    public UserResponseDto findUserByExternalId(UUID externalId) {
+        val user = userRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE + externalId));
+        return userResponseMapper.map(user);
+    }
+
+    @Transactional
+    @CacheEvict(value = "users", key = "#externalId")
+    public void deleteUserByExternalId(UUID externalId) {
+        val user = userRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE + externalId));
+        user.isDeleted(true);
+    }
+
+    @Transactional
+    @CachePut(value = "users", key = "#externalId")
+    public UserResponseDto update(UUID externalId, UserRequestDto userRequestDto) {
+//        userValidator.validate(userRequestDto);
+
+        val storedUser = userRepository.findByExternalId(externalId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE + externalId));
+
+        val updatedUser = userRequestMapper.map(userRequestDto);
+
+        setPhoneIfChangedAndRemainedUnique(storedUser, updatedUser);
+        setEmailIfChangedAndRemainedUnique(storedUser, updatedUser);
+
+        // TODO: обновить потом для обновлеиния
+        /*
+        storedUser
+                .firstName(updatedUser.firstName())
+                .lastName(updatedUser.lastName())
+                .photoId(updatedUser.photoId());
+        */
+
+        return userResponseMapper.map(storedUser);
+    }
+
+    public ClientAuthDetails getUserDetails(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_BY_EMAIL_ERROR_MESSAGE + email));
+    }
+
+    private void checkEmailForUniqueness(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new UserAlreadyExistsException(
+                    String.valueOf(
+                            new ErrorResponse(
+                                    UUID.randomUUID().toString(),
+                                    USER_WITH_THE_SAME_EMAIL_IS_EXISTS_MESSAGE.formatted(email),
+                                    OffsetDateTime.now())
+                    )
+            );
+        }
+    }
+
+    private String formatPhone(String phone) {
+        StringBuilder formattedPhone = new StringBuilder(phone.replaceAll("\\D", ""));
+        if (formattedPhone.length() == 10) {
+            formattedPhone.insert(0, "7");
+        }
+        // todo если уже начинается с 7, то все равно сделает замену
+        formattedPhone.replace(0, 1, "7");
+        Matcher matcher = GROUPED_PHONE_NUMBERS_PATTERN.matcher(formattedPhone);
+        if (matcher.find()) {
+            formattedPhone = new StringBuilder();
+            matcher.appendReplacement(formattedPhone, "+$1$2$3$4$5");
+            matcher.appendTail(formattedPhone);
+            return formattedPhone.toString();
+        }
+        return StringUtils.EMPTY;
+    }
+
+//    private void checkPhoneForUniqueness(String formattedPhone) {
+//        if (userRepository.existsByPhone(formattedPhone)) {
+//            throw new IllegalArgumentException(USER_WITH_THE_SAME_PHONE_IS_EXISTS_MESSAGE.formatted(formattedPhone));
+//        }
+//    }
+
+    private void setEmailIfChangedAndRemainedUnique(User storedUser, User updatedUser) {
+        val email = updatedUser.email();
+        if (ObjectUtils.notEqual(storedUser.email(), email)) {
+            checkEmailForUniqueness(email);
+            storedUser.email(email);
+        }
+    }
+
+    // TODO: починить потом
+    private void setPhoneIfChangedAndRemainedUnique(User storedUser, User updatedUser) {
+        val formattedPhone = formatPhone(updatedUser.credentials().getPhone());
+        if (ObjectUtils.notEqual(storedUser.credentials().getPhone(), formattedPhone)) {
+//            checkPhoneForUniqueness(formattedPhone);
+            storedUser.credentials().setPhone(formattedPhone);
+        }
+    }
+}
