@@ -9,4 +9,6 @@ dependencies {
 
     // Spring Framework
     implementation libs.spring.webflux
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 }

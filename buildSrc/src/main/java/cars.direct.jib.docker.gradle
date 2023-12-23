@@ -3,7 +3,7 @@ jib {
         image = jibBaseDockerImage
     }
     to {
-        image = "${dockerHubUsername}/cars_direct-${project.name}:${project.version}"
+        image = "${dockerHubUsername}/car-direct-${project.name}:${project.version}"
         tags = [version, project.version] as List<String>
         auth {
             username = dockerHubUsername

@@ -1,5 +1,6 @@
 package car.direct.userservice.controller.publicapi;
 
+import car.direct.auth.model.Role;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,18 +50,25 @@ public class UserController implements UserApi {
         return userService.findUserByExternalId(userId);
     }
 
-    @PutMapping("/users/{externalId}")
+    @PutMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDto updateUser(@PathVariable("externalId") UUID externalId,
+    public UserResponseDto updateUser(@PathVariable("userId") UUID userId,
                                       @Valid @RequestBody(required = false) UserRequestDto userRequestDto) {
         log.info("Received request to update a user: {}", userRequestDto);
-        return userService.update(externalId, userRequestDto);
+        return userService.update(userId, userRequestDto);
     }
 
-    @DeleteMapping("/users/{externalId}")
+    @DeleteMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable("externalId") UUID externalId) {
-        log.info("Received request to delete a user by id: {}", externalId);
-        userService.deleteUserByExternalId(externalId);
+    public void deleteUser(@PathVariable("userId") UUID userId) {
+        log.info("Received request to delete a user by id: {}", userId);
+        userService.deleteUserByExternalId(userId);
+    }
+
+    // Make the User a Seller
+    @PutMapping("/users/{userId}/roles/seller")
+    @ResponseStatus(HttpStatus.OK)
+    public void makeUserSeller(@PathVariable("userId") UUID userId) {
+        userService.setToUserSellerRole(userId);
     }
 }

@@ -73,7 +73,6 @@ VALUES
 
 select * from "public".brands;
 
-
 ('Oldsmobile', 'fc29114a-9a0b-4550-8154-683476985f'),
 ('Oltcit', 'fc29114a-9a0b-4550-8154-683476985f'),
 ('Olympian Motors', 'fc29114a-9a0b-4550-8154-683476985f'),

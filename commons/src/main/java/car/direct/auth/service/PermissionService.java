@@ -12,9 +12,9 @@ import java.util.*;
 @Slf4j
 public class PermissionService {
 
-    public boolean hasPermission(UUID id, Role role, String idAttribute) {
+    public boolean hasPermission(UUID userId, Role role, String idAttribute) {
         Map<String, Object> tokenAttributes = getTokenAttributes();
-        return !tokenAttributes.isEmpty() && checkPermission(id, role, idAttribute, tokenAttributes);
+        return !tokenAttributes.isEmpty() && checkPermission(userId, role, idAttribute, tokenAttributes);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,7 +37,7 @@ public class PermissionService {
 
     @SuppressWarnings("unchecked")
     private boolean checkPermission(
-            UUID id,
+            UUID userId,
             Role role,
             String idAttribute,
             Map<String, Object> tokenAttributes
@@ -47,12 +47,12 @@ public class PermissionService {
             List<String> authorities = (List<String>) tokenAttributes.get("authorities");
             if (authorities.contains(Role.ADMIN.getKey())) {
                 return true;
-            } else if (clientId.equals(id.toString()) && authorities.contains(role.getKey())) {
+            } else if (clientId.equals(userId.toString()) && authorities.contains(role.getKey())) {
                 return true;
             }
         }
 
-//        log.debug("Client with id {} has no permission for resource", id);
+        log.debug("Client with id {} has no permission for resource", userId);
         return false;
     }
 }

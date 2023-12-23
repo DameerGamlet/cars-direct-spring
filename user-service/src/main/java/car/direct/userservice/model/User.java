@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import car.direct.auth.model.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter

@@ -1,5 +1,10 @@
 package car.direct.authorizationservice.service;
 
+import car.direct.authorizationservice.config.properties.SecurityProperties;
+import car.direct.authorizationservice.dto.OAuthClientData;
+import car.direct.authorizationservice.dto.UserLoginRequest;
+import car.direct.authorizationservice.service.provider.SellerAuthenticationProvider;
+import car.direct.authorizationservice.service.provider.UserAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.access.AuthorizationServiceException;
@@ -13,19 +18,15 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import car.direct.authorizationservice.config.properties.SecurityProperties;
-import car.direct.authorizationservice.dto.OAuthClientData;
-import car.direct.authorizationservice.dto.UserLoginRequest;
-import car.direct.authorizationservice.service.provider.UserAuthenticationProvider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
 
-import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
+import static car.direct.auth.util.ClientAttributes.SELLER_ID;
 import static car.direct.auth.util.ClientAttributes.USER_ID;
-import static car.direct.exception.messages.ExceptionMessages.*;
+import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +35,19 @@ public class AuthenticationService {
     private final SecurityProperties securityProperties;
     private final OAuth2AuthorizationService authorizationService;
     private final UserAuthenticationProvider userAuthenticationProvider;
+    private final SellerAuthenticationProvider sellerAuthenticationProvider;
+
 
     public OAuthClientData authenticate(UserLoginRequest request) {
-        return getoAuthClientData(
-                userAuthenticationProvider.authenticate(
-                        new UsernamePasswordAuthenticationToken(request.email(), request.password())
-                )
-        );
+        Authentication authentication = userAuthenticationProvider.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        return getoAuthClientData(authentication);
+    }
+
+    public OAuthClientData authenticateSeller(UserLoginRequest request) {
+        Authentication authentication = sellerAuthenticationProvider.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        return getoAuthClientData(authentication);
     }
 
     public void revokeAuthentication(String token, OAuth2TokenType tokenType) {
@@ -51,19 +58,23 @@ public class AuthenticationService {
 
             OAuth2Authorization authorization = authorizationService.findByToken(token, tokenType);
 
-            if (authorization != null)
+            if (authorization != null) {
                 authorizationService.remove(authorization);
-            else
-                throw new AuthorizationServiceException(CLIENT_NOT_AUTHENTICATED);
-        } else
-            throw new AuthorizationServiceException(AUTHORIZATION_TOKEN_IS_NOT_PROVIDER);
+            } else {
+                throw new AuthorizationServiceException("You were not authenticated");
+            }
+        } else {
+            throw new AuthorizationServiceException("Token is not provided");
+        }
     }
 
     @SuppressWarnings("unchecked")
     private OAuthClientData getoAuthClientData(Authentication authentication) {
         Map<String, String> details = (Map<String, String>) authentication.getDetails();
         String email = authentication.getPrincipal().toString();
-        String clientId = details.get(USER_ID);
+        String clientId = details.containsKey(USER_ID)
+                ? details.get(USER_ID)
+                : details.get(SELLER_ID);
 
         if (authentication.isAuthenticated()) {
             OAuth2AccessToken accessToken =
@@ -71,7 +82,9 @@ public class AuthenticationService {
             OAuth2RefreshToken refreshToken =
                     tokenService.createRefreshToken(authentication, securityProperties.getRefreshTokenLifetimeInMinutes());
 
-            authorizationService.save(getoAuth2Authorization(email, clientId, accessToken, refreshToken));
+            OAuth2Authorization authorizationObject = getoAuth2Authorization(email, clientId, accessToken, refreshToken);
+
+            authorizationService.save(authorizationObject);
 
             return new OAuthClientData(
                     clientId,
@@ -82,7 +95,7 @@ public class AuthenticationService {
             );
         }
 
-        throw new AuthorizationServiceException(CLIENT_NOT_AUTHENTICATED_WITH_ID.formatted(clientId));
+        throw new AuthorizationServiceException("User with id '%s' wasn't authenticated".formatted(clientId));
     }
 
     @SneakyThrows

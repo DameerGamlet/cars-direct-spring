@@ -50,6 +50,9 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://127.0.0.1:9000/oauth2/jwks
+  kafka:
+    bootstrap-servers: localhost:9092
+    topic: user-seller-topic
   datasource:
     url: jdbc:postgresql://${POSTGRES_URL}
     username: ${POSTGRES_NAME}

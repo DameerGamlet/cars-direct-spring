@@ -4,11 +4,41 @@
 
 ## Технологии
 
-Backend: Spring Boot (Data, Security, ...), Java 17, Postgresql (для Users), MongoDB (для Cars), docker, RabbitMq, Redis, kubernates, ...
+Backend: 
+- Spring Boot (Data, Security, ...), 
+- Java 17, 
+- Postgresql 15, 
+- docker, 
+- Kafka, 
+- Redis, 
+- kubernates, ...
 
-Frontend: React, JS, TS, HTML, CSS, Webpack
+Frontend: 
+- React, 
+- TS, 
+- HTML, 
+- CSS, 
+- Webpack
 
 ## Превью
+
+### Создание нового пользователя через user-service (по api-gateway-service)
+
+![create_new_user.png](resources%2Fimages%2Fcreate_new_user.png)
+
+## Активация через mail-service (по api-gateway-service, связь с user-service c WebClient класса)
+
+![user_activate.png](resources%2Fimages%2Fuser_activate.png)
+
+## Созданные пользователи (через Postgres из Docker Container)
+
+![created_users.png](resources%2Fimages%2Fcreated_users.png)
+
+## Получение токена пользователя (для работы с пользователем)
+
+
+
+## Получение статуса в качестве продавка (связь через )
 
 ## Инструкция по использованию
 
@@ -22,4 +52,4 @@ TODO: прописать про доступ к работе данного пр
 4. Реализовать пример оркестрации или хореографии (docker + k8s)
 5. Реализовать пример асинхронного взаимодействия между сервисами
 6. Подключить шину данных (Rabbit MQ)
-7. Авторизация и аутентификация через единый микросервис авторизации (Api Gateway Service)
+7. Авторизация и аутентификация через единый микросервис авторизации (api-gateway-service)

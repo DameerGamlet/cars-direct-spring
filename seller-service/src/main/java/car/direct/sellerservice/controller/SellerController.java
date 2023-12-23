@@ -16,35 +16,42 @@ import static car.direct.util.HttpUtils.PUBLIC_API_VI;
 
 @Slf4j
 @RestController
-//@RequestMapping(PUBLIC_API_V1)
-@RequestMapping("public/api/v1")
+@RequestMapping(PUBLIC_API_VI + "/sellers")
+//@RequestMapping("public/api/v1" + )
 @RequiredArgsConstructor
 public class SellerController implements SellerApi {
 
     private final SellerService sellerService;
 
-    @PostMapping("sellers")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public UUID createSeller(@RequestBody @Valid SellerRegistration sellerRegistration) {
         return sellerService.createSeller(sellerRegistration);
     }
 
-    @GetMapping("sellers/{sellerId}")
+    @PostMapping("/from/users")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UUID createSeller(String json) {
+        return sellerService.createSellerAutoWithKafka(json);
+    }
+
+    @GetMapping("/{sellerId}")
     @ResponseStatus(HttpStatus.OK)
     public SellerResponseDto getSellerBySellerId(
             @PathVariable("sellerId") UUID sellerId) {
         return sellerService.getSellerBySellerId(sellerId);
     }
 
-    @PutMapping("sellers/{sellerId}")
+    @PutMapping("/{sellerId}")
     @ResponseStatus(HttpStatus.OK)
+    @Deprecated
     public SellerResponseDto updateSeller(
             @PathVariable UUID sellerId,
             @RequestBody @Valid SellerRequestDto sellerRequestDto) {
         return sellerService.updateSeller(sellerId, sellerRequestDto);
     }
 
-    @DeleteMapping("sellers/{sellerId}")
+    @DeleteMapping("/{sellerId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteSeller(@PathVariable UUID sellerId) {
         sellerService.deleteSellerBySellerId(sellerId);

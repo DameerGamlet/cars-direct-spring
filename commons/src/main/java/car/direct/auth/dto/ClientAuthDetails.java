@@ -1,5 +1,6 @@
 package car.direct.auth.dto;
 
+import java.util.Set;
 import java.util.UUID;
 
 public record ClientAuthDetails(

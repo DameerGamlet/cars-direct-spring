@@ -32,4 +32,10 @@ public class AuthController {
         authenticationService.revokeAuthentication(token, OAuth2TokenType.ACCESS_TOKEN);
         headers.remove(AUTHORIZATION);
     }
+
+    @PostMapping("/sellers/oauth/token")
+    @ResponseStatus(HttpStatus.OK)
+    public OAuthClientData loginSeller(@RequestBody UserLoginRequest request) {
+        return authenticationService.authenticateSeller(request);
+    }
 }

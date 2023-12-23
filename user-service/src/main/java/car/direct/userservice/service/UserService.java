@@ -1,22 +1,5 @@
 package car.direct.userservice.service;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 import car.direct.auth.dto.ClientAuthDetails;
 import car.direct.auth.model.Role;
 import car.direct.model.ErrorResponse;
@@ -33,6 +16,27 @@ import car.direct.userservice.model.UserCredentials;
 import car.direct.userservice.model.UserMailRequest;
 import car.direct.userservice.repository.ConfirmationTokenRepository;
 import car.direct.userservice.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -47,16 +51,21 @@ import static car.direct.util.HttpUtils.PUBLIC_API_VI;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-//    private final UserValidator userValidator;
+    //    private final UserValidator userValidator;
     private final UserRepository userRepository;
     private final UserRequestMapper userRequestMapper;
     private final UserResponseMapper userResponseMapper;
-//    private final UserRegistrationValidator userRegistrationValidator;
+    //    private final UserRegistrationValidator userRegistrationValidator;
     private final ConfirmationTokenRepository repository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
     @Value("${services.gateway-service.url}")
     private String API_GATEWAY_URL;
+
+    @Value("${spring.kafka.topic}")
+    private String topic;
 
     private final WebClient webClient = WebClient.create();
 
@@ -72,8 +81,8 @@ public class UserService {
                         userDto.credentials().patronymic())
                 )
                 .externalId(UUID.randomUUID())
-                .email(userDto.email())
                 .role(Role.USER)
+                .email(userDto.email())
                 .password(userDto.password())
                 .build();
 
@@ -151,8 +160,6 @@ public class UserService {
     @Transactional
     @CachePut(value = "users", key = "#externalId")
     public UserResponseDto update(UUID externalId, UserRequestDto userRequestDto) {
-//        userValidator.validate(userRequestDto);
-
         val storedUser = userRepository.findByExternalId(externalId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE + externalId));
 
@@ -160,14 +167,6 @@ public class UserService {
 
         setPhoneIfChangedAndRemainedUnique(storedUser, updatedUser);
         setEmailIfChangedAndRemainedUnique(storedUser, updatedUser);
-
-        // TODO: обновить потом для обновлеиния
-        /*
-        storedUser
-                .firstName(updatedUser.firstName())
-                .lastName(updatedUser.lastName())
-                .photoId(updatedUser.photoId());
-        */
 
         return userResponseMapper.map(storedUser);
     }
@@ -228,5 +227,20 @@ public class UserService {
 //            checkPhoneForUniqueness(formattedPhone);
             storedUser.credentials().setPhone(formattedPhone);
         }
+    }
+
+    @Transactional
+    public void setToUserSellerRole(UUID userId) {
+        User user = userRepository.findByExternalId(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_ERROR_MESSAGE + userId));
+
+        if (user.role() == Role.SELLER) {
+            log.info("User already seller");
+            return;
+        }
+
+        user.role(Role.SELLER);
+
+        kafkaTemplate.send(topic, user.toString());
     }
 }

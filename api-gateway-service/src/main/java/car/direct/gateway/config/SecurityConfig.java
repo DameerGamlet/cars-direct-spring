@@ -29,6 +29,7 @@ public class SecurityConfig {
 //                }).and()
                 .authorizeExchange()
                 .pathMatchers("/public/api/v1/mail/send/activation/**").permitAll()
+                .pathMatchers("/public/api/v1/users/send/activation/**").permitAll()
                 .anyExchange()
                 .permitAll();
 

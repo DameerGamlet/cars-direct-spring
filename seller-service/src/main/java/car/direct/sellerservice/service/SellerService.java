@@ -1,14 +1,17 @@
 package car.direct.sellerservice.service;
+
+import car.direct.auth.dto.ClientAuthDetails;
 import car.direct.sellerservice.dto.SellerRegistration;
 import car.direct.sellerservice.dto.SellerRequestDto;
 import car.direct.sellerservice.dto.SellerResponseDto;
 import car.direct.sellerservice.mapper.SellerMapper;
 import car.direct.sellerservice.model.Seller;
 import car.direct.sellerservice.repository.SellerRepository;
-import car.direct.auth.dto.ClientAuthDetails;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,12 @@ public class SellerService {
 
     private final SellerMapper sellerMapper;
 
+    @Value("${spring.kafka.topic}")
+    private String kafkaTopic;
+
+    @Value("${spring.kafka.consumer.group-id}")
+    private String kafkaGroupId;
+
     private static final String SELLER_NOT_FOUND_EXCEPTION = "Seller not found with seller id = ";
 
     @Transactional
@@ -31,6 +40,14 @@ public class SellerService {
 
         Seller seller = sellerMapper.toSeller(sellerRegistration);
         return sellerRepository.save(seller).getExternalId();
+    }
+
+    //    @KafkaListener(topics = "${spring.kafka.topic}", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "user-seller-topic", groupId = "seller-service")
+    public UUID createSellerAutoWithKafka(String user) {
+        System.out.println("Listened user: " + user);
+
+        return UUID.randomUUID();
     }
 
     public SellerResponseDto getSellerBySellerId(UUID sellerId) {
@@ -46,6 +63,7 @@ public class SellerService {
     }
 
     @Transactional
+    @Deprecated
     public SellerResponseDto updateSeller(UUID sellerId, SellerRequestDto sellerRequestDto) {
         Seller seller = sellerRepository
                 .findByExternalId(sellerId)

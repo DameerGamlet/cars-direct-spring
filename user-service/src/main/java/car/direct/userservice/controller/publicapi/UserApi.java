@@ -1,5 +1,10 @@
 package car.direct.userservice.controller.publicapi;
 
+import car.direct.model.ErrorResponse;
+import car.direct.userservice.dto.request.UserRegistrationDto;
+import car.direct.userservice.dto.request.UserRequestDto;
+import car.direct.userservice.dto.response.CreateUserResponse;
+import car.direct.userservice.dto.response.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,11 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
-import car.direct.model.ErrorResponse;
-import car.direct.userservice.dto.request.UserRegistrationDto;
-import car.direct.userservice.dto.request.UserRequestDto;
-import car.direct.userservice.dto.response.CreateUserResponse;
-import car.direct.userservice.dto.response.UserResponseDto;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 
@@ -102,4 +103,21 @@ public interface UserApi {
     void deleteUser(
             @Parameter(name = "id", description = "User ID", required = true) UUID externalId
     );
+
+
+    @Operation(
+            summary = "Make User Role Update",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            responses = @ApiResponse(responseCode = "200", description = "Successful user update"))
+    @PreAuthorize(value = """
+        @permissionService.hasPermission(
+            #userId,
+            T(car.direct.auth.model.Role).USER,
+            T(car.direct.auth.util.ClientAttributes).USER_ID
+        )
+        """
+    )
+    void makeUserSeller(
+            @Parameter(name = "userId", description = "user ID", required = true) @PathVariable UUID userId);
+
 }
