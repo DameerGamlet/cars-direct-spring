@@ -1,4 +1,4 @@
-INSERT INTO "public".brands (name, brand_id)
+INSERT INTO brands (name, brand_id)
 VALUES
 ('Acura', 'fc29114a-9a0b-4550-8154-683476985f06'),
 ('Agrale', 'fc29114a-9a0b-4550-8154-683476985f07'),

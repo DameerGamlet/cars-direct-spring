@@ -1,6 +1,6 @@
 package cars.direct.service;
 
-import cars.direct.model.BrandCar;
+import cars.direct.dto.response.BrandPreview;
 import cars.direct.model.ModelCar;
 import cars.direct.model.TypeCar;
 
@@ -12,7 +12,7 @@ public interface CharacteristicService {
      *
      * @return Список брендов.
      */
-    List<BrandCar> getAllBrands();
+    List<BrandPreview> getAllBrands();
 
     /**
      * Получить модели для определённого бренда.

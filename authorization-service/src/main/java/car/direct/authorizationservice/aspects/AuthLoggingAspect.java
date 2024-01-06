@@ -13,8 +13,6 @@ import car.direct.authorizationservice.dto.UserLoginRequest;
 @Component
 public class AuthLoggingAspect {
 
-    private static final String TEMPLATE_BEFORE = "-".repeat(50) + "%n%s%n";
-
     @Pointcut("execution(* login(..))")
     public void logUserLogin() {
     }
@@ -30,7 +28,6 @@ public class AuthLoggingAspect {
 
             if (args[0] instanceof UserLoginRequest request) {
                 log.info(
-                        TEMPLATE_BEFORE,
                         "Attempting to log in with email: '%s'"
                                 .formatted(request.email())
                 );

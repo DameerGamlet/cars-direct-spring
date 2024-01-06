@@ -7,6 +7,7 @@ import car.direct.userservice.dto.request.UserRegistrationDto;
 import car.direct.userservice.dto.request.UserRequestDto;
 import car.direct.userservice.dto.response.CreateUserResponse;
 import car.direct.userservice.dto.response.UserResponseDto;
+import car.direct.userservice.dto.response.UserToSellerResponse;
 import car.direct.userservice.exception.UserAlreadyExistsException;
 import car.direct.userservice.mapper.UserRequestMapper;
 import car.direct.userservice.mapper.UserResponseMapper;
@@ -16,16 +17,13 @@ import car.direct.userservice.model.UserCredentials;
 import car.direct.userservice.model.UserMailRequest;
 import car.direct.userservice.repository.ConfirmationTokenRepository;
 import car.direct.userservice.repository.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.nimbusds.jose.shaded.gson.Gson;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -41,25 +39,23 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
-import java.util.regex.Matcher;
 
 import static car.direct.userservice.utils.ExceptionMessagesConstants.*;
-import static car.direct.userservice.utils.PatternConstants.GROUPED_PHONE_NUMBERS_PATTERN;
 import static car.direct.util.HttpUtils.PUBLIC_API_VI;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    //    private final UserValidator userValidator;
     private final UserRepository userRepository;
     private final UserRequestMapper userRequestMapper;
     private final UserResponseMapper userResponseMapper;
-    //    private final UserRegistrationValidator userRegistrationValidator;
     private final ConfirmationTokenRepository repository;
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
+
+    private final Gson gson = new Gson();
 
     @Value("${services.gateway-service.url}")
     private String API_GATEWAY_URL;
@@ -165,7 +161,6 @@ public class UserService {
 
         val updatedUser = userRequestMapper.map(userRequestDto);
 
-        setPhoneIfChangedAndRemainedUnique(storedUser, updatedUser);
         setEmailIfChangedAndRemainedUnique(storedUser, updatedUser);
 
         return userResponseMapper.map(storedUser);
@@ -189,43 +184,11 @@ public class UserService {
         }
     }
 
-    private String formatPhone(String phone) {
-        StringBuilder formattedPhone = new StringBuilder(phone.replaceAll("\\D", ""));
-        if (formattedPhone.length() == 10) {
-            formattedPhone.insert(0, "7");
-        }
-        // todo если уже начинается с 7, то все равно сделает замену
-        formattedPhone.replace(0, 1, "7");
-        Matcher matcher = GROUPED_PHONE_NUMBERS_PATTERN.matcher(formattedPhone);
-        if (matcher.find()) {
-            formattedPhone = new StringBuilder();
-            matcher.appendReplacement(formattedPhone, "+$1$2$3$4$5");
-            matcher.appendTail(formattedPhone);
-            return formattedPhone.toString();
-        }
-        return StringUtils.EMPTY;
-    }
-
-//    private void checkPhoneForUniqueness(String formattedPhone) {
-//        if (userRepository.existsByPhone(formattedPhone)) {
-//            throw new IllegalArgumentException(USER_WITH_THE_SAME_PHONE_IS_EXISTS_MESSAGE.formatted(formattedPhone));
-//        }
-//    }
-
     private void setEmailIfChangedAndRemainedUnique(User storedUser, User updatedUser) {
         val email = updatedUser.email();
         if (ObjectUtils.notEqual(storedUser.email(), email)) {
             checkEmailForUniqueness(email);
             storedUser.email(email);
-        }
-    }
-
-    // TODO: починить потом
-    private void setPhoneIfChangedAndRemainedUnique(User storedUser, User updatedUser) {
-        val formattedPhone = formatPhone(updatedUser.credentials().getPhone());
-        if (ObjectUtils.notEqual(storedUser.credentials().getPhone(), formattedPhone)) {
-//            checkPhoneForUniqueness(formattedPhone);
-            storedUser.credentials().setPhone(formattedPhone);
         }
     }
 
@@ -239,8 +202,20 @@ public class UserService {
             return;
         }
 
+//        userRepository.setSellerStatus(userId);
+
         user.role(Role.SELLER);
 
-        kafkaTemplate.send(topic, user.toString());
+        UserToSellerResponse response = new UserToSellerResponse(
+                userId,
+                user.email(),
+                user.password(),
+                user.credentials().getFirstName(),
+                user.credentials().getLastName(),
+                user.credentials().getPatronymic(),
+                user.photoId()
+        );
+
+        kafkaTemplate.send(topic, gson.toJson(response));
     }
 }

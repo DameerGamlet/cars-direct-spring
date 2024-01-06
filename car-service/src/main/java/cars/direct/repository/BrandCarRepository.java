@@ -1,5 +1,6 @@
 package cars.direct.repository;
 
+import cars.direct.dto.response.BrandPreview;
 import cars.direct.model.BrandCar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,14 @@ import java.util.List;
 @Repository
 public interface BrandCarRepository extends JpaRepository<BrandCar, Long> {
 
-    @Query("SELECT b FROM BrandCar b")
-    List<BrandCar> getBrands();
+    @Query(value = """
+    SELECT
+    b.brand_id AS brandId,
+    b.name AS name
+    FROM brands AS b
+    ORDER BY b.name
+    """,
+    nativeQuery = true
+    )
+    List<BrandPreview> getBrands();
 }

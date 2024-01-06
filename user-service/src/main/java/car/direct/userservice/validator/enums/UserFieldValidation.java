@@ -7,9 +7,8 @@ import car.direct.userservice.validator.UserValidator;
 import java.util.List;
 
 public enum UserFieldValidation {
-    EMAIL(UserValidator::validateEmail),
+    EMAIL(UserValidator::validateEmail);
 //    NAME(UserValidator::validateFullName),
-    PHONE(UserValidator::validatePhone);
     private final TriConsumer<UserValidator, UserRequestDto, List<String>> consumer;
 
     UserFieldValidation(TriConsumer<UserValidator, UserRequestDto, List<String>> consumer) {

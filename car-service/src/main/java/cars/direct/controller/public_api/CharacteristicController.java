@@ -1,6 +1,6 @@
 package cars.direct.controller.public_api;
 
-import cars.direct.model.BrandCar;
+import cars.direct.dto.response.BrandPreview;
 import cars.direct.model.ModelCar;
 import cars.direct.model.TypeCar;
 import cars.direct.service.CharacteristicService;
@@ -16,13 +16,13 @@ import static car.direct.util.HttpUtils.PUBLIC_API_VI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(PUBLIC_API_VI + "/")
+@RequestMapping(PUBLIC_API_VI + "/cars")
 public class CharacteristicController implements CharacteristicApi {
 
     private final CharacteristicService characteristicService;
 
     @GetMapping("/brands")
-    public List<BrandCar> getAllBrands() {
+    public List<BrandPreview> getAllBrands() {
         return characteristicService.getAllBrands();
     }
 

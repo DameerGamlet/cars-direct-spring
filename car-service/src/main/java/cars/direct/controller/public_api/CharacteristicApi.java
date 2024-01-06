@@ -1,7 +1,7 @@
 package cars.direct.controller.public_api;
 
 import car.direct.model.ErrorResponse;
-import cars.direct.model.BrandCar;
+import cars.direct.dto.response.BrandPreview;
 import cars.direct.model.ModelCar;
 import cars.direct.model.TypeCar;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +38,7 @@ public interface CharacteristicApi {
                     }
             )
     )
-    List<BrandCar> getAllBrands();
+    List<BrandPreview> getAllBrands();
 
     @Operation(
             summary = "Get models by brand",

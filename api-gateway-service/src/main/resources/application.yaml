@@ -44,6 +44,10 @@ spring:
           uri: ${services.seller.url}
           predicates:
             - Path=/*/*/*/sellers, /*/*/*/sellers/{externalId}
+        - id: car-service
+          uri: ${services.car.url}
+          predicates:
+            - Path=/*/*/*/cars, /*/*/*/cars/**, /*/*/*/cars/brands, /*/*/*/cars/types, /*/*/*/cars/{carId}
       default-filters:
         - name: AuthFilter
         - name: CircuitBreaker
@@ -87,6 +91,8 @@ application:
         methods: POST
       - url: /*/*/*/users/oauth/login
         methods: POST, GET
+      - url: /*/*/*/sellers/oauth/login
+        methods: POST, GET
       - url: /*/*/*/users/activation
         methods: POST, GET
       - url: /*/*/*/mail/send/activation
@@ -96,6 +102,8 @@ application:
         methods: POST
       - url: /*/*/*/cars-previews
         methods: POST, GET
+      - url: /*/*/*/cars/brands
+        methods: GET
 logging:
   level:
     org: INFO

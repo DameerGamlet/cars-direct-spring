@@ -25,6 +25,11 @@ public interface SignApi {
     Mono<OAuthClientResponse> loginUser(@RequestBody Mono<LoginRequest> request);
 
     @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Продавец успешно авторизовался"),
+    })
+    Mono<OAuthClientResponse> loginSeller(@RequestBody Mono<LoginRequest> request);
+
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Успешно вышел из системы")
     })
     @Parameters(value = {

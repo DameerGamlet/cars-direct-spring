@@ -18,12 +18,6 @@ public class UserCredentials {
 
     private String patronymic;
 
-    private String jobTitle;
-
-    private String placeWork;
-
-    private String phone;
-
     public UserCredentials(String lastName, String firstName, String patronymic) {
         this.lastName = lastName;
         this.firstName = firstName;

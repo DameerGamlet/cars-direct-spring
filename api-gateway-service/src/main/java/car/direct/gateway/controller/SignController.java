@@ -1,5 +1,7 @@
 package car.direct.gateway.controller;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,11 @@ public class SignController implements SignApi {
     @PostMapping("/users/oauth/login")
     public Mono<OAuthClientResponse> loginUser(@RequestBody Mono<LoginRequest> request) {
         return authenticationService.authenticateUser(request);
+    }
+
+    @PostMapping("/sellers/oauth/login")
+    public Mono<OAuthClientResponse> loginSeller(@RequestBody Mono<LoginRequest> request) {
+        return authenticationService.authenticateSeller(request);
     }
 
     @PostMapping("/oauth/logout")

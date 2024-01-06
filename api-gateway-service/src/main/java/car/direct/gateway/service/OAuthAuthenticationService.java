@@ -1,5 +1,6 @@
 package car.direct.gateway.service;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +53,15 @@ public class OAuthAuthenticationService {
                 .map(data ->
                         new OAuthClientResponse(data.id(), data.email(), data.accessToken())
                 );
+    }
+
+    public Mono<OAuthClientResponse> authenticateSeller(Mono<LoginRequest> request) {
+        return webClient.post()
+                .uri(baseAuthUrl + "/" + PUBLIC_API_VI + "/sellers/oauth/token")
+                .body(request, LoginRequest.class)
+                .exchangeToMono(this::getAuthenticatedClientData)
+                .doOnNext(data -> AUTHORIZED_CLIENTS_DATA.put(data.id(), data))
+                .map(data -> new OAuthClientResponse(data.id(), data.email(), data.accessToken()));
     }
 
     public Mono<ResponseEntity<Void>> clearAuthentication(ServerHttpRequest request) {

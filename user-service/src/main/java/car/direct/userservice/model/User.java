@@ -1,15 +1,13 @@
 package car.direct.userservice.model;
 
+import car.direct.auth.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import car.direct.auth.model.*;
-
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -35,8 +33,6 @@ public class User {
     private UserCredentials credentials;
 
     private String email;
-
-    private String login;
 
     private String password;
 

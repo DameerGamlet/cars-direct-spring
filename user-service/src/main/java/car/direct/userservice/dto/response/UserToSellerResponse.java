@@ -5,11 +5,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record UserResponseDto(
-        UUID id,
+public record UserToSellerResponse(
+        UUID userId,
+
+        String email,
+        String password,
+
         String firstName,
         String lastName,
-        String email,
+        String patronymic,
         String photoId
 ) {
 }

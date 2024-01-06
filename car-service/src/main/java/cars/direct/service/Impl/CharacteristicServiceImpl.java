@@ -1,6 +1,6 @@
 package cars.direct.service.Impl;
 
-import cars.direct.model.BrandCar;
+import cars.direct.dto.response.BrandPreview;
 import cars.direct.model.ModelCar;
 import cars.direct.model.TypeCar;
 import cars.direct.repository.BrandCarRepository;
@@ -16,13 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CharacteristicServiceImpl implements CharacteristicService {
 
-    private TypeCarRepository typeRepository;
-    private BrandCarRepository brandRepository;
-    private ModelCarRepository modelRepository;
+    private final TypeCarRepository typeRepository;
+    private final BrandCarRepository brandRepository;
+    private final ModelCarRepository modelRepository;
 
 
     @Override
-    public List<BrandCar> getAllBrands() {
+    public List<BrandPreview> getAllBrands() {
         return brandRepository.getBrands();
     }
 

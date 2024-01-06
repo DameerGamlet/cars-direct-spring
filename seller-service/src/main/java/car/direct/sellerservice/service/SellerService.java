@@ -4,9 +4,11 @@ import car.direct.auth.dto.ClientAuthDetails;
 import car.direct.sellerservice.dto.SellerRegistration;
 import car.direct.sellerservice.dto.SellerRequestDto;
 import car.direct.sellerservice.dto.SellerResponseDto;
+import car.direct.sellerservice.dto.UserToSellerResponse;
 import car.direct.sellerservice.mapper.SellerMapper;
 import car.direct.sellerservice.model.Seller;
 import car.direct.sellerservice.repository.SellerRepository;
+import com.nimbusds.jose.shaded.gson.Gson;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,9 @@ public class SellerService {
     private final SellerRepository sellerRepository;
 
     private final SellerMapper sellerMapper;
+
+
+    private final Gson gson = new Gson();
 
     @Value("${spring.kafka.topic}")
     private String kafkaTopic;
@@ -44,10 +49,14 @@ public class SellerService {
 
     //    @KafkaListener(topics = "${spring.kafka.topic}", groupId = "${spring.kafka.consumer.group-id}")
     @KafkaListener(topics = "user-seller-topic", groupId = "seller-service")
-    public UUID createSellerAutoWithKafka(String user) {
-        System.out.println("Listened user: " + user);
+    public UUID createSellerAutoWithKafka(String userJson) {
+        System.out.println("Listened user: " + userJson);
 
-        return UUID.randomUUID();
+        UserToSellerResponse userRequest = gson.fromJson(userJson, UserToSellerResponse.class);
+
+        Seller seller = sellerMapper.toSeller(new SellerRegistration(userRequest.email(), userRequest.password()));
+
+        return sellerRepository.save(seller).getExternalId();
     }
 
     public SellerResponseDto getSellerBySellerId(UUID sellerId) {

@@ -17,7 +17,6 @@ public class UserResponseMapper implements Mapper<User, UserResponseDto> {
                 user.externalId(),
                 user.credentials().getFirstName(),
                 user.credentials().getLastName(),
-                user.credentials().getPhone(),
                 user.email(),
                 user.photoId()
         );

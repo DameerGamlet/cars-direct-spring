@@ -1,11 +1,11 @@
 plugins {
     id 'cars.direct.common.base'
     id 'cars.direct.common.data'
+    id 'cars.direct.common.security'
 }
 
 group = 'cars.direct'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
 
 dependencies {
     implementation project(':commons')

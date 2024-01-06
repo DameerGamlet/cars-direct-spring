@@ -1,5 +1,8 @@
 package car.direct.userservice.validator;
 
+import car.direct.userservice.config.properties.ErrorInfoProperties;
+import car.direct.userservice.dto.request.UserRequestDto;
+import car.direct.userservice.validator.enums.UserFieldValidation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -9,15 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import car.direct.userservice.config.properties.ErrorInfoProperties;
-import car.direct.userservice.dto.request.UserRequestDto;
-import car.direct.userservice.validator.enums.UserFieldValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static car.direct.userservice.utils.PatternConstants.*;
+import static car.direct.userservice.utils.PatternConstants.EMAIL_PATTERN;
+import static car.direct.userservice.utils.PatternConstants.NAME_PATTERN;
 import static car.direct.userservice.utils.ValidationCodeConstants.*;
 
 @Component
@@ -65,15 +66,6 @@ public class UserValidator {
         } else if (!EMAIL_PATTERN.matcher(email).matches()) {
             exceptionMessages.add(properties.getMessageByErrorCode(INCORRECT_EMAIL_VALIDATION_ERROR_CODE)
                     .formatted(email));
-        }
-    }
-
-    public void validatePhone(@NotNull UserRequestDto userRequestDto, @NotNull List<String> exceptionMessages) {
-        val phone = userRequestDto.phone();
-
-        if (StringUtils.isNotBlank(phone) && !PHONE_PATTERN.matcher(phone).matches()) {
-            exceptionMessages.add(properties.getMessageByErrorCode(INCORRECT_PHONE_VALIDATION_ERROR_CODE)
-                    .formatted(phone));
         }
     }
 }

@@ -1,5 +1,6 @@
 package car.direct.userservice.repository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,10 +21,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByExternalId(@Param("externalId") UUID externalId);
 
     @Query(value = """
-        SELECT new car.direct.auth.dto.ClientAuthDetails(u.externalId, u.email, u.password, upper(u.role), u.isActive)
-        FROM User u
-        WHERE u.email = :email AND u.isDeleted = false
-        """
+            SELECT new car.direct.auth.dto.ClientAuthDetails(u.externalId, u.email, u.password, upper(u.role), u.isActive)
+            FROM User u
+            WHERE u.email = :email AND u.isDeleted = false
+            """
     )
     Optional<ClientAuthDetails> findUserByEmail(String email);
 
