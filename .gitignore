@@ -55,3 +55,4 @@ gradle/wrapper
 mail-service/src/main/resources/templates/mail-template.html
 mail-service/src/main/resources/application.yaml.bak
 gradle.properties
+/sql_queries/

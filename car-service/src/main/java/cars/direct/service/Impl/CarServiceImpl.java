@@ -1,5 +1,6 @@
 package cars.direct.service.Impl;
 
+import cars.direct.dto.request.CarRequest;
 import cars.direct.dto.response.CarResponse;
 import cars.direct.model.Car;
 import cars.direct.repository.CarRepository;
@@ -56,5 +57,11 @@ public class CarServiceImpl implements CarService {
     public Long getCount() {
         Long numberOfCars = repository.getNumberOfCars().longValue();
         return null;
+    }
+
+    @Override
+    public void createCar(UUID sellerId, CarRequest request) {
+        request.setSellerId(sellerId);
+//        repository.save();
     }
 }

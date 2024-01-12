@@ -9,6 +9,9 @@ version = '0.0.1-SNAPSHOT'
 
 dependencies {
     implementation project(':commons')
+    implementation 'org.hibernate.validator:hibernate-validator:7.0.1.Final'
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
 }
 
 test {

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "characteristics")
 @ApiResponses(value = {
@@ -54,7 +55,7 @@ public interface CharacteristicApi {
             )
     )
     List<ModelCar> getModelsByBrand(
-            @Parameter(name = "brandId", description = "Brand ID", required = true) Long brandId
+            @Parameter(name = "brandId", description = "Brand ID", required = true) UUID brandId
     );
 
     @Operation(

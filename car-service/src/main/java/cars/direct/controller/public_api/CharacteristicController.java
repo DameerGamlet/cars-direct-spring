@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 import static car.direct.util.HttpUtils.PUBLIC_API_VI;
 
@@ -27,7 +28,7 @@ public class CharacteristicController implements CharacteristicApi {
     }
 
     @GetMapping("/brands/{brandId}/models")
-    public List<ModelCar> getModelsByBrand(@PathVariable Long brandId) {
+    public List<ModelCar> getModelsByBrand(@PathVariable UUID brandId) {
         return characteristicService.getModelsByBrand(brandId);
     }
 

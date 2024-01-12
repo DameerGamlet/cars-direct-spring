@@ -1,5 +1,6 @@
 package cars.direct.service;
 
+import cars.direct.dto.request.CarRequest;
 import cars.direct.dto.response.CarResponse;
 import cars.direct.model.Car;
 import org.springframework.data.domain.Page;
@@ -61,4 +62,6 @@ public interface CarService {
      * @return Количество автомобилей.
      */
     Long getCount();
+
+    void createCar(UUID sellerId, CarRequest request);
 }

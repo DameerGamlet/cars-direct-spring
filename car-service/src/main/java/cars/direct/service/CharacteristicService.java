@@ -5,6 +5,7 @@ import cars.direct.model.ModelCar;
 import cars.direct.model.TypeCar;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CharacteristicService {
     /**
@@ -20,7 +21,7 @@ public interface CharacteristicService {
      * @param brandId ID бренда.
      * @return Список моделей.
      */
-    List<ModelCar> getModelsByBrand(Long brandId);
+    List<ModelCar> getModelsByBrand(UUID brandId);
 
     /**
      * Получить типы автомобилей.

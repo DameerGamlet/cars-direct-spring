@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class CharacteristicServiceImpl implements CharacteristicService {
     }
 
     @Override
-    public List<ModelCar> getModelsByBrand(Long brandId) {
+    public List<ModelCar> getModelsByBrand(UUID brandId) {
         return modelRepository.getModelsByBrand(brandId);
     }
 

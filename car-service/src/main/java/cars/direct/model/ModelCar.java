@@ -26,6 +26,5 @@ public class ModelCar {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @ManyToOne(optional = false)
-    private BrandCar brandCar;
+    private UUID brandId;
 }
