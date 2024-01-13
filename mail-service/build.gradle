@@ -3,6 +3,9 @@ plugins {
     id 'cars.direct.common.security'
 }
 
+group = 'car.directs'
+version = '1.0-SNAPSHOT'
+
 dependencies {
     implementation project(':commons')
     implementation libs.spring.boot.webflux
