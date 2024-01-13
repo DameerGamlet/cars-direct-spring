@@ -23,11 +23,11 @@ public class SellerController implements SellerApi {
 
     private final SellerService sellerService;
 
-    @PostMapping()
+/*    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public UUID createSeller(@RequestBody @Valid SellerRegistration sellerRegistration) {
         return sellerService.createSeller(sellerRegistration);
-    }
+    }*/
 
     @PostMapping("/from/users")
     @ResponseStatus(HttpStatus.CREATED)

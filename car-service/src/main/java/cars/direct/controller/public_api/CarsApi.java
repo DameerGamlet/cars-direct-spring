@@ -3,6 +3,7 @@ package cars.direct.controller.public_api;
 
 import car.direct.model.ErrorResponse;
 import cars.direct.dto.response.CarResponse;
+import cars.direct.dto.response.CarResponseProjection;
 import cars.direct.model.Car;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,7 +43,7 @@ public interface CarsApi {
                     }
             )
     )
-    Page<CarResponse> getCars(Pageable pageable);
+    Page<CarResponseProjection> getCars(Pageable pageable);
 
     @Operation(
             summary = "Get cars by brand",

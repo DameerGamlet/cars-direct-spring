@@ -1,6 +1,7 @@
 package cars.direct.controller.public_api;
 
 import cars.direct.dto.response.CarResponse;
+import cars.direct.dto.response.CarResponseProjection;
 import cars.direct.model.Car;
 import cars.direct.service.CarService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class CarController implements CarsApi{
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<CarResponse> getCars(Pageable pageable) {
+    public Page<CarResponseProjection> getCars(Pageable pageable) {
         return service.getAll(pageable);
     }
 

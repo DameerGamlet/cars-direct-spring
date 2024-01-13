@@ -2,6 +2,7 @@ package cars.direct.service;
 
 import cars.direct.dto.request.CarRequest;
 import cars.direct.dto.response.CarResponse;
+import cars.direct.dto.response.CarResponseProjection;
 import cars.direct.model.Car;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +47,7 @@ public interface CarService {
      * @param pageable Страница.
      * @return Страница автомобилей.
      */
-    Page<CarResponse> getAll(Pageable pageable);
+    Page<CarResponseProjection> getAll(Pageable pageable);
 
     /**
      * Получить автомобиль по ID.
@@ -63,5 +64,5 @@ public interface CarService {
      */
     Long getCount();
 
-    void createCar(UUID sellerId, CarRequest request);
+    UUID createCar(UUID sellerId, CarRequest request);
 }

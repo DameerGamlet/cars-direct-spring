@@ -26,9 +26,6 @@ public class UserController implements UserApi {
 
     private final UserService userService;
 
-    @Value("${services.frontend.url}")
-    private String FRONTEND_URL;
-
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public CreateUserResponse create(@RequestBody UserRegistrationDto userRegistration) {

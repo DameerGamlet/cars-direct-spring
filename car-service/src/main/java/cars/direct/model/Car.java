@@ -1,38 +1,32 @@
 package cars.direct.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Setter
 @Getter
+@ToString
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = "cars")
 public class Car {
 
     @Id
+    @SequenceGenerator(name = "products_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_sequence")
     private Long id;
 
     private UUID carId;
+    private UUID brandId;
+    private UUID typeId;
+    private UUID modelId;
 
-    @ManyToOne(optional = false)
-    private BrandCar brandCar;
-
-    @ManyToOne(optional = false)
-    private TypeCar typeCar;
-
-    @ManyToOne(optional = false)
-    private ModelCar modelCar;
     private String iconPreview;
 
     private int year;
@@ -41,7 +35,7 @@ public class Car {
     private String condition;
 
     private BigDecimal price;
-    private String sellerId;
+    private UUID sellerId;
     private double engineCapacity;
 
     private String color;
@@ -49,4 +43,7 @@ public class Car {
     private String address;
     private int horsepower;
     private double fuelTankCapacity;
+
+    @CreationTimestamp
+    private LocalDateTime creationDate;
 }

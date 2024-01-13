@@ -19,5 +19,3 @@ VALUES
   ('117', 'Грузовик',      'be4c18ec-a880-443d-bdea-346beda2da61'),
   ('118', 'Мотоцикл',      'be4c18ec-a880-443d-bdea-346beda2da62'),
   ('119', 'Грузовой мотоцикл', 'be4c18ec-a880-443d-bdea-346beda2da63');
-
-  select * from "types";

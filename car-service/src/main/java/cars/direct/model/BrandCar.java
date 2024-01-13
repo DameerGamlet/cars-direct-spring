@@ -20,7 +20,7 @@ public class BrandCar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID BrandId;
+    private UUID brandId;
 
     @NotBlank(message = "Name is required")
     private String name;

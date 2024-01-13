@@ -37,6 +37,7 @@ public class SellerService {
 
     private static final String SELLER_NOT_FOUND_EXCEPTION = "Seller not found with seller id = ";
 
+/*
     @Transactional
     public UUID createSeller(SellerRegistration sellerRegistration) {
         if (sellerRepository.existsSellerByEmail(sellerRegistration.email())) {
@@ -46,6 +47,7 @@ public class SellerService {
         Seller seller = sellerMapper.toSeller(sellerRegistration);
         return sellerRepository.save(seller).getExternalId();
     }
+*/
 
     //    @KafkaListener(topics = "${spring.kafka.topic}", groupId = "${spring.kafka.consumer.group-id}")
     @KafkaListener(topics = "user-seller-topic", groupId = "seller-service")
@@ -55,6 +57,9 @@ public class SellerService {
         UserToSellerResponse userRequest = gson.fromJson(userJson, UserToSellerResponse.class);
 
         Seller seller = sellerMapper.toSeller(new SellerRegistration(userRequest.email(), userRequest.password()));
+
+        seller.setFirstName(userRequest.firstName());
+        seller.setLastName(userRequest.lastName());
 
         return sellerRepository.save(seller).getExternalId();
     }

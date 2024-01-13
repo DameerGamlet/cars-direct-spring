@@ -202,8 +202,6 @@ public class UserService {
             return;
         }
 
-//        userRepository.setSellerStatus(userId);
-
         user.role(Role.SELLER);
 
         UserToSellerResponse response = new UserToSellerResponse(
@@ -215,6 +213,8 @@ public class UserService {
                 user.credentials().getPatronymic(),
                 user.photoId()
         );
+
+        System.out.println(response);
 
         kafkaTemplate.send(topic, gson.toJson(response));
     }

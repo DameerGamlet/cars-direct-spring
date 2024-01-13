@@ -10,10 +10,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class CarRequest {
-
-    @NotNull(message = "Car ID is required")
-    private UUID carId;
-
     @NotNull(message = "Brand ID is required")
     private UUID brandId;
 
@@ -36,9 +32,6 @@ public class CarRequest {
 
     @NotNull(message = "Price is required")
     private BigDecimal price;
-
-    @NotNull(message = "Seller ID is required")
-    private UUID sellerId;
 
     @NotNull(message = "Engine capacity is required")
     private double engineCapacity;

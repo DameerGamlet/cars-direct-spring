@@ -53,14 +53,14 @@ import java.util.UUID;
 })
 public interface SellerApi {
 
-    @Operation(summary = "Создание нового продавца",
+/*    @Operation(summary = "Создание нового продавца",
             responses = {@ApiResponse(responseCode = "201",
                     description = "Новый продавец создан",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UUID.class))),
                     @ApiResponse(responseCode = "409", description = "Ошибка при создании нового продавца")
             })
-    UUID createSeller(@RequestBody @Valid SellerRegistration sellerRegistration);
+    UUID createSeller(@RequestBody @Valid SellerRegistration sellerRegistration);*/
 
     @Operation(operationId = "getSellerBySellerId", summary = "Получение продавца по sellerId")
     @ApiResponses({

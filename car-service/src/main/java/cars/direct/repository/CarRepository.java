@@ -1,6 +1,7 @@
 package cars.direct.repository;
 
 import cars.direct.dto.response.CarResponse;
+import cars.direct.dto.response.CarResponseProjection;
 import cars.direct.model.Car;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -131,8 +132,31 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     @Query(value = "SELECT c FROM cars c WHERE c.type_car_id=:typeId", nativeQuery = true)
     Page<Car> getCarsByType(@Param("typeId") Long typeId, Pageable pageable);
 
-    @Query(value = "SELECT c FROM Car c")
-    Page<Car> getCars(Pageable pageable);
+    @Query("""
+       SELECT
+           c.carId AS carId,
+           b.name AS brandCar,
+           t.name AS typeCar,
+           m.name AS modelCar,
+           c.iconPreview AS iconPreview,
+           c.year AS year,
+           c.mileage AS mileage,
+           c.condition AS condition,
+           c.price AS price,
+           c.sellerId AS sellerId,
+           c.engineCapacity AS engineCapacity,
+           c.color AS color,
+           c.transmission AS transmission,
+           c.address AS address,
+           c.horsepower AS horsepower,
+           c.fuelTankCapacity AS fuelTankCapacity
+       FROM Car c
+       INNER JOIN ModelCar m ON c.modelId = m.modelId
+       INNER JOIN BrandCar b ON c.brandId = b.brandId
+       INNER JOIN TypeCar t ON c.typeId = t.typeId
+       """)
+    Page<CarResponseProjection> getCarsWithJoins(Pageable pageable);
+
 
     @Query("SELECT c FROM Car c WHERE c.id = :carId")
     Optional<Car> getCar(@Param("carId") UUID carId);
