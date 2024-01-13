@@ -15,6 +15,8 @@ Backend:
 
 ## Превью
 
+![img.png](resources/images/tree.png)
+
 ### Создание нового пользователя через user-service (по api-gateway-service)
 
 ![create_new_user.png](resources%2Fimages%2Fcreate_new_user.png)
@@ -60,6 +62,7 @@ Backend:
 
 ## Docker
 
+![jib.png](resources%2Fimages%2Fjib.png)
 ![docker.png](resources%2Fimages%2Fdocker.png)
 
 ## Создание автомобиля
