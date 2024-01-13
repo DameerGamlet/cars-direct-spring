@@ -44,22 +44,39 @@ Backend:
 ## Получение статуса продавца (связь через Kafka MQ между user-service и seller-service)
 
 ![created_seller_by_user.png](resources%2Fimages%2Fcreated_seller_by_user.png)
-![img.png](img.png)
 
-## Получение токена для продавца ()
+### Отправка
 
+![kafka-produce.png](resources%2Fimages%2Fkafka-produce.png)
 
+### Принятие
 
-## Инструкция по использованию
+![kafka-consume.png](resources%2Fimages%2Fkafka-consume.png)
 
-TODO: прописать про доступ к работе данного приложения с помощью docker run ...
+## Асинхронное взаимодействие с использованием реактивного программиварония
+
+![auth.png](resources%2Fimages%2Fauth.png)
+![mail.png](resources%2Fimages%2Fmail.png)
+
+## Docker
+
+![docker.png](resources%2Fimages%2Fdocker.png)
+
+## Создание автомобиля
+
+![create_car.png](resources%2Fimages%2Fcreate_car.png)
+
+## SWAGGER
+
+![img.png](resources/images/swaggerui.png)
+![img.png](resources/images/swagger.png)
 
 ## Описание
 
-1. Написать монолит с 5-10 доменными сущностями (интернет магазин, CRM система, или т.п.), желательно придерживаться Clean Architecture. (yes)
-2. Попилить на микросервисы
-3. Обернуть в докер контейнеры (jib)
-4. Реализовать пример оркестрации или хореографии (docker + k8s)
-5. Реализовать пример асинхронного взаимодействия между сервисами
-6. Подключить шину данных (Rabbit MQ)
-7. Авторизация и аутентификация через единый микросервис авторизации (api-gateway-service)
+- ✅ 1. Написать монолит с 5-10 доменными сущностями (интернет магазин, CRM система, или т.п.), желательно придерживаться Clean Architecture. (yes)
+- ✅ 2. Попилить на микросервисы 
+- ✅ 3. Обернуть в докер контейнеры (jib)
+- ✅ 4. Реализовать пример оркестрации или хореографии (docker + k8s)
+- ✅ Реализовать пример асинхронного взаимодействия между сервисами
+- ✅ 6. Подключить шину данных (Rabbit MQ)
+- ✅ 7. Авторизация и аутентификация через единый микросервис авторизации (api-gateway-service)

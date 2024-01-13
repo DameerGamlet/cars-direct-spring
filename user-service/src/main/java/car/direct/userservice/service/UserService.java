@@ -204,14 +204,9 @@ public class UserService {
 
         user.role(Role.SELLER);
 
-        UserToSellerResponse response = new UserToSellerResponse(
-                userId,
-                user.email(),
-                user.password(),
-                user.credentials().getFirstName(),
-                user.credentials().getLastName(),
-                user.credentials().getPatronymic(),
-                user.photoId()
+        UserToSellerResponse response = new UserToSellerResponse(userId, user.email(), user.password(),
+                user.credentials().getFirstName(), user.credentials().getLastName(),
+                user.credentials().getPatronymic(), user.photoId()
         );
 
         System.out.println(response);
